@@ -7,6 +7,9 @@ import Users from "./pages/User/Users";
 import Dashboard from "./pages/Instructor/Dashboard";
 import Students from "./pages/Instructor/Students";
 import Classroom from "./pages/Instructor/Classroom";
+import ClassroomView from "./pages/Instructor/ClassroomView";
+import People from "./pages/Instructor/People";
+import Classwork from "./pages/Instructor/Classwork";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +31,18 @@ const router = createBrowserRouter([
       {
         path: "/instructor/classrooms",
         element: <Classroom />,
+      },
+      {
+        path: "/instructor/classrooms/:id",
+        element: <ClassroomView />,
+      },
+      {
+        path: "/instructor/people/:id",
+        element: <People />,
+      },
+      {
+        path: "/instructor/classwork/:id",
+        element: <Classwork />,
       },
     ],
   },

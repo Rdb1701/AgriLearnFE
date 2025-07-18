@@ -1,10 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TextInput from "../../TextInput";
 import axiosClient from "../../../../utils/axios-client";
 import swal from "sweetalert";
 import { useStateContext } from "../../../contexts/ContextProvider";
 
-export default function ClassroomModal({ handleClose, onSubmit, closeRef }) {
+export default function ClassroomModal({ onSubmit, closeRef, edittingUser }) {
   const { user } = useStateContext();
   const [data, setData] = useState({
     id: "",
@@ -14,7 +14,6 @@ export default function ClassroomModal({ handleClose, onSubmit, closeRef }) {
     section_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
   });
   const [errors, setErrors] = useState(null);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,16 +27,52 @@ export default function ClassroomModal({ handleClose, onSubmit, closeRef }) {
     e.preventDefault();
     setErrors(null);
 
-   const responseErrors = await onSubmit(data);
+    const responseErrors = await onSubmit(data);
 
-   if (responseErrors) {
+    if (responseErrors) {
       setErrors(responseErrors);
+    } else {
+      setData({
+        id: "",
+        class_name: "",
+        subject: "",
+        instructor_id: user.id,
+      });
     }
-
   };
 
+  //Is Edditong or has ID
+  useEffect(() => {
+    if (edittingUser) {
+      setData({
+        id: edittingUser.id || "",
+        class_name: edittingUser.class_name || "",
+        subject: edittingUser.subject || "",
+        instructor_id: user.id,
+        section_code: edittingUser.section_code || "",
+      });
+    } else {
+      setData({
+        id: "",
+        class_name: "",
+        subject: "",
+        instructor_id: user.id,
+        section_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
+      });
+    }
+  }, [edittingUser]);
 
-  const handleUpdate = () => {};
+
+  //hnadling close in clearing the inputs
+  const handleClose = () => {
+    setData({
+      id: "",
+      class_name: "",
+      subject: "",
+      instructor_id: user.id,
+      section_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
+    });
+  };
 
   return (
     <div>
@@ -47,7 +82,7 @@ export default function ClassroomModal({ handleClose, onSubmit, closeRef }) {
         data-bs-backdrop="static"
         data-bs-keyboard="false"
       >
-        <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div className="modal-content" style={styles.modalContent}>
             <div className="modal-header" style={styles.modalHeader}>
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -169,30 +204,16 @@ export default function ClassroomModal({ handleClose, onSubmit, closeRef }) {
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                   </svg>
                   <span>
-                    <strong>Section code:</strong> {data.section_code}
+                    <strong>Section Code:</strong> {data.section_code}
                   </span>
                 </div>
               </div>
 
               <div className="modal-footer" style={styles.modalFooter}>
                 <button
-                  type="button"
-                  className="btn"
-                  onClick={handleClose}
-                  style={styles.cancelButton}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "rgba(19, 115, 51, 0.08)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor = "transparent")
-                  }
-                >
-                  Cancel
-                </button>
-                <button
                   type="submit"
                   className="btn"
-                  onClick={!data.id ? handleSubmit : handleUpdate}
+                  onClick={handleSubmit}
                   style={styles.submitButton}
                   onMouseEnter={(e) =>
                     (e.target.style.backgroundColor = "#0f5132")
@@ -218,29 +239,33 @@ const styles = {
     borderRadius: "8px",
     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
     overflow: "hidden",
+    margin: "1rem", // Add margin for mobile
+    maxHeight: "90vh",
   },
   modalHeader: {
     backgroundColor: "#137333",
     color: "white",
-    padding: "20px 24px",
+    padding: "16px 20px",
     borderBottom: "none",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
+    flexWrap: "wrap",
   },
   headerIcon: {
-    width: "32px",
-    height: "32px",
+    width: "28px",
+    height: "28px",
     backgroundColor: "rgba(255, 255, 255, 0.2)",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     marginRight: "12px",
+    flexShrink: 0,
   },
   modalTitle: {
     margin: 0,
-    fontSize: "20px",
+    fontSize: "18px",
     fontWeight: "500",
     color: "white",
   },
@@ -248,23 +273,26 @@ const styles = {
     background: "none",
     border: "none",
     color: "white",
-    fontSize: "24px",
+    fontSize: "20px",
     cursor: "pointer",
     padding: "4px",
     borderRadius: "50%",
-    width: "32px",
-    height: "32px",
+    width: "28px",
+    height: "28px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     transition: "background-color 0.2s",
+    flexShrink: 0,
   },
   modalBody: {
-    padding: "24px",
+    padding: "20px",
     backgroundColor: "#fafafa",
+    maxHeight: "calc(90vh - 140px)",
+    overflowY: "auto",
   },
   inputGroup: {
-    marginBottom: "24px",
+    marginBottom: "20px",
   },
   label: {
     display: "block",
@@ -282,6 +310,7 @@ const styles = {
     transition: "border-color 0.2s, box-shadow 0.2s",
     outline: "none",
     width: "100%",
+    boxSizing: "border-box",
   },
   errorMessage: {
     color: "#d93025",
@@ -289,6 +318,7 @@ const styles = {
     marginTop: "4px",
     display: "flex",
     alignItems: "center",
+    flexWrap: "wrap",
   },
   infoBox: {
     backgroundColor: "#e6f4ea",
@@ -299,14 +329,16 @@ const styles = {
     color: "#0d652d",
     display: "flex",
     alignItems: "center",
+    flexWrap: "wrap",
   },
   modalFooter: {
     backgroundColor: "white",
     borderTop: "1px solid #e0e0e0",
-    padding: "16px 24px",
+    padding: "16px 20px",
     display: "flex",
     justifyContent: "flex-end",
     gap: "12px",
+    flexWrap: "wrap",
   },
   cancelButton: {
     background: "none",
@@ -318,6 +350,7 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
     transition: "background-color 0.2s",
+    minWidth: "60px",
   },
   submitButton: {
     backgroundColor: "#137333",
@@ -330,5 +363,6 @@ const styles = {
     cursor: "pointer",
     transition: "background-color 0.2s",
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12)",
+    minWidth: "60px",
   },
 };

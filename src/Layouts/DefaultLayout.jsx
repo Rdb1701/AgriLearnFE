@@ -40,7 +40,6 @@ export default function DefaultLayout() {
   const handleItemClick = (itemId, route) => {
     setActiveItem(itemId);
     navigate(route);
-
     setIsMobileMenuOpen(false);
   };
 
@@ -169,19 +168,21 @@ export default function DefaultLayout() {
         </div>
       </div>
 
-      {/* Main */}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: "280px",
-          "@media (max-width: 767px)": {
-            marginLeft: "0",
-          },
-        }}
-      >
-        <div className="d-md-none" style={{ height: "60px" }} />
-        <div className="p-3 p-md-4">
-          <Outlet />
+      {/* Main Content */}
+      <div className="flex-grow-1" style={{ marginLeft: "0" }}>
+        {/* Desktop margin */}
+        <div className="d-none d-md-block" style={{ marginLeft: "280px" }}>
+          <div className="p-3 p-md-4">
+            <Outlet />
+          </div>
+        </div>
+        
+        {/* Mobile content (no margin) */}
+        <div className="d-md-none">
+          <div style={{ height: "60px" }} />
+          <div className="p-3">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ export default function Login() {
   });
   const [errors, setErrors] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -22,6 +23,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors(null);
+    setIsLoading(true);
     try {
       const response = await axiosClient.post("/login", formData);
       console.log(response.data);
@@ -41,9 +43,10 @@ export default function Login() {
         console.log({ message: [error.response.data.message] });
         setErrors({ message: [error.response.data.message] });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
-
 
   return (
     <div
@@ -87,13 +90,15 @@ export default function Login() {
                   Welcome back to your agricultural journey
                 </p>
               </div>
-              {/* Form Body */}
+         
               <div className="card-body p-4">
-               {errors?.message && (
-                <div className="alert alert-danger text-center">{errors.message[0]}</div>
-              )}
+                {errors?.message && (
+                  <div className="alert alert-danger text-center">
+                    {errors.message[0]}
+                  </div>
+                )}
                 <form onSubmit={handleSubmit}>
-                  {/* Email Field */}
+                 
                   <div className="mb-3">
                     <label
                       htmlFor="email"
@@ -136,7 +141,7 @@ export default function Login() {
                     )}
                   </div>
 
-                  {/* Password Field */}
+       
                   <div className="mb-4">
                     <label
                       htmlFor="password"
@@ -224,7 +229,7 @@ export default function Login() {
                     </div>
                   </div>
 
-                  {/* Login Button */}
+            
                   <button
                     type="submit"
                     className="btn btn-lg w-100 text-white fw-bold shadow-sm"
@@ -258,10 +263,10 @@ export default function Login() {
                       <polyline points="10,17 15,12 10,7" />
                       <line x1="15" y1="12" x2="3" y2="12" />
                     </svg>
-                    Sign In to AgriLearn
+                    {isLoading ? "Signing In..." : " Sign In to AgriLearn"}
                   </button>
                 </form>
-         
+
                 <div className="text-center my-4">
                   <span className="text-muted">or</span>
                 </div>

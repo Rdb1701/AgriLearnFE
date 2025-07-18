@@ -7,7 +7,9 @@ import axiosClient from "../../../utils/axios-client";
 
 export default function Classroom() {
   const [classroomData, setClassroomData] = useState([]);
+  const [isEditting, setIsEditting] = useState([]);
   const closeRef = useRef();
+  const onEditRef = useRef();
 
   const fetchData = async () => {
     try {
@@ -21,20 +23,33 @@ export default function Classroom() {
 
   const handleSubmit = async (payload) => {
     try {
-      const response = await axiosClient.post("/classroom", payload);
-      swal("Successfully Added!", "", "success");
-      closeRef.current.click();
-      fetchData();
-      console.log(response.data);
-
+      if (!payload.id) {
+        const response = await axiosClient.post("/classroom", payload);
+        swal("Successfully Added!", "", "success");
+        closeRef.current.click();
+        fetchData();
+        console.log(response.data);
+      }else{
+        const response = await axiosClient.put(`/classroom/${payload.id}`, payload);
+        swal("Successfully Udpated!", "", "success");
+        closeRef.current.click();
+        fetchData();
+      }
     } catch (error) {
       // setErrors(error.response.data.errors);
       console.log("Error on Adding Data: ", error);
 
       //Returning the Errors to the inputs if there are errors
-       if (error.response) {
+      if (error.response) {
         return error.response.data.errors;
       }
+    }
+  };
+
+  const handleEdit = (classroom) => {
+    if (classroom) {
+      setIsEditting(classroom);
+      onEditRef.current.click();
     }
   };
 
@@ -44,9 +59,13 @@ export default function Classroom() {
 
   return (
     <>
-      <ClassroomModal onSubmit={handleSubmit} closeRef={closeRef} />
-      <ClassroomHeader />
-      <ClassroomCard classroomData={classroomData} />
+      <ClassroomModal
+        onSubmit={handleSubmit}
+        closeRef={closeRef}
+        edittingUser={isEditting}
+      />
+      <ClassroomHeader onEditRef={onEditRef} />
+      <ClassroomCard classroomData={classroomData} onEdit={handleEdit} />
     </>
   );
 }

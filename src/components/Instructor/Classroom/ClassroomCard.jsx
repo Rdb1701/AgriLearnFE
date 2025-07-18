@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../utils/axios-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
-export default function ClassroomCard({classroomData}) {
 
-  const handleEdit = (classroomId) => {
-    console.log("Edit classroom with ID:", classroomId);
-    // Add  edit logic
-  };
-
+export default function ClassroomCard({ classroomData, onEdit }) {
+  const navigate = useNavigate();
   const handleArchive = (classroomId) => {
     console.log("Archive classroom with ID:", classroomId);
     // Add  archive logic here
@@ -18,6 +15,9 @@ export default function ClassroomCard({classroomData}) {
     }
   };
 
+  const handleView = (id) => {
+    navigate(`/instructor/classrooms/${id}`);
+  };
 
   return (
     <>
@@ -48,10 +48,7 @@ export default function ClassroomCard({classroomData}) {
                         <a
                           className="dropdown-item"
                           href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleEdit(classroom.id);
-                          }}
+                          onClick={() => onEdit(classroom)}
                         >
                           <i className="bi bi-pencil"></i>
                           Edit
@@ -83,13 +80,18 @@ export default function ClassroomCard({classroomData}) {
                     </div>
                     <div>
                       <div className="text-muted small">
-                        Section: {classroom.section_code}
+                        Section Code: {classroom.section_code}
                       </div>
                     </div>
                   </div>
 
                   <div className="d-flex justify-content-between align-items-center">
-                    <button className="btn btn-green">View Class</button>
+                    <button
+                      className="btn btn-green"
+                      onClick={() => handleView(classroom.id)}
+                    >
+                      View Class
+                    </button>
                     <div>
                       <button className="btn btn-link text-muted p-1">
                         <i className="bi bi-chat-dots"></i>

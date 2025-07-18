@@ -1,7 +1,7 @@
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 
-export default function ClassroomHeader() {
+export default function ClassroomHeader({ onEditRef }) {
   return (
     <div className="">
       <button
@@ -13,6 +13,7 @@ export default function ClassroomHeader() {
         }}
         data-bs-toggle="modal"
         data-bs-target="#add_modal"
+        ref={onEditRef}
       >
         <FaPlus size={14} />
         Add Class

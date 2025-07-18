@@ -4,7 +4,7 @@ import { useStateContext } from "../contexts/ContextProvider";
 
 export default function GuestLayout() {
 
-  const {user,setUser, token, setToken} = useStateContext();
+  const {user, setUser, token, setToken} = useStateContext();
 
   if(token){
     return <Navigate to="/instructor/dashboard"/>
