@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import axiosClient from "../../../../utils/axios-client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { FaSpinner } from "react-icons/fa";
 
-
-export default function ClassroomCard({ classroomData, onEdit }) {
+export default function ClassroomCard({ classroomData, onEdit, isLoading }) {
   const navigate = useNavigate();
   const handleArchive = (classroomId) => {
     console.log("Archive classroom with ID:", classroomId);
@@ -24,84 +24,93 @@ export default function ClassroomCard({ classroomData, onEdit }) {
       <div className="container py-4">
         <div className="mb-4">
           <h2 className="text-success fw-bold">My Classes</h2>
-          <p className="text-muted">
-            Welcome back! Here are your active classrooms.
-          </p>
         </div>
 
         <div className="row g-4">
-          {classroomData.map((classroom) => (
-            <div key={classroom.id} className="col-12 col-md-6 col-lg-4">
-              <div className="card classroom-card">
-                <div className="card-header-green">
-                  <div className="dropdown">
-                    <button
-                      className="three-dots-btn dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <BsThreeDotsVertical />
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a
-                          className="dropdown-item"
-                          href="#"
-                          onClick={() => onEdit(classroom)}
-                        >
-                          <i className="bi bi-pencil"></i>
-                          Edit
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="dropdown-item text-danger"
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleArchive(classroom.id);
-                          }}
-                        >
-                          <i className="bi bi-archive"></i>
-                          Archive
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                  <h5 className="mb-1 fw-bold">{classroom.class_name}</h5>
-                  <p className="mb-0 opacity-75">{classroom.subject}</p>
-                </div>
-
-                <div className="card-body">
-                  <div className="d-flex align-items-center mb-3">
-                    <div className="teacher-avatar me-2">
-                      {classroom.instructor_id ? "I" : "T"}
+          {classroomData.length > 0 ? (
+            classroomData.map((classroom) => (
+              <div key={classroom.id} className="col-12 col-md-6 col-lg-4">
+                <div className="card classroom-card">
+                  <div className="card-header-green">
+                    <div className="dropdown">
+                      <button
+                        className="three-dots-btn dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <BsThreeDotsVertical />
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <a
+                            className="dropdown-item"
+                            href="#"
+                            onClick={() => onEdit(classroom)}
+                          >
+                            <i className="bi bi-pencil"></i>
+                            Edit
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            className="dropdown-item text-danger"
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleArchive(classroom.id);
+                            }}
+                          >
+                            <i className="bi bi-archive"></i>
+                            Archive
+                          </a>
+                        </li>
+                      </ul>
                     </div>
-                    <div>
-                      <div className="text-muted small">
-                        Section Code: {classroom.section_code}
+                    <h5 className="mb-1 fw-bold">{classroom.class_name}</h5>
+                    <p className="mb-0 opacity-75">{classroom.subject}</p>
+                  </div>
+
+                  <div className="card-body">
+                    <div className="d-flex align-items-center mb-3">
+                      <div className="teacher-avatar me-2">
+                        {classroom.instructor_id ? "I" : "T"}
+                      </div>
+                      <div>
+                        <div className="text-muted small">
+                          Section Code: {classroom.section_code}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="d-flex justify-content-between align-items-center">
-                    <button
-                      className="btn btn-green"
-                      onClick={() => handleView(classroom.id)}
-                    >
-                      View Class
-                    </button>
-                    <div>
-                      <button className="btn btn-link text-muted p-1">
-                        <i className="bi bi-chat-dots"></i>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <button
+                        className="btn btn-green"
+                        onClick={() => handleView(classroom.id)}
+                      >
+                        View Class
                       </button>
+                      <div>
+                        <button className="btn btn-link text-muted p-1">
+                          <i className="bi bi-chat-dots"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="text-center ">
+              {isLoading ? (
+                <span>
+                  Loading <FaSpinner />
+                </span>
+              ) : (
+                <span className="text-danger">No Data Available</span>
+              )}
             </div>
-          ))}
+          )}
         </div>
       </div>
 
