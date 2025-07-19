@@ -10,6 +10,7 @@ import Classroom from "./pages/Instructor/Classroom";
 import ClassroomView from "./pages/Instructor/ClassroomView";
 import People from "./pages/Instructor/People";
 import Classwork from "./pages/Instructor/Classwork";
+import GoogleAuthSuccess from "./pages/Auth/GoogleAuthSuccess";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,11 @@ const router = createBrowserRouter([
     path: "/",
     element: <GuestLayout />,
     children: [
+      {
+        path: "/google-auth-success",
+        element: <GoogleAuthSuccess />,
+      },
+
       {
         path: "/",
         element: <Navigate to="/login" />,

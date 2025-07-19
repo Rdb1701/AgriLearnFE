@@ -8,16 +8,20 @@ import axiosClient from "../../../utils/axios-client";
 export default function Classroom() {
   const [classroomData, setClassroomData] = useState([]);
   const [isEditting, setIsEditting] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const closeRef = useRef();
   const onEditRef = useRef();
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
       const response = await axiosClient.get("/classroom");
       setClassroomData(response.data);
       console.log(response.data);
     } catch (error) {
       console.log("Error in fetching Classroom Data", error);
+    }finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,8 +68,8 @@ export default function Classroom() {
         closeRef={closeRef}
         edittingUser={isEditting}
       />
-      <ClassroomHeader onEditRef={onEditRef} />
-      <ClassroomCard classroomData={classroomData} onEdit={handleEdit} />
+      <ClassroomHeader onEditRef={onEditRef}  />
+      <ClassroomCard classroomData={classroomData} onEdit={handleEdit}  isLoading={isLoading}/>
     </>
   );
 }

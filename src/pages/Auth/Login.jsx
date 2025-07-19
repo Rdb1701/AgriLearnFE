@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axiosClient from "../../../utils/axios-client";
 import { useStateContext } from "../../contexts/ContextProvider";
+import { FaGoogle } from "react-icons/fa";
 
 export default function Login() {
   const { setUser, setToken } = useStateContext();
@@ -48,6 +49,10 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8000/api/auth/google/redirect";
+  };
+
   return (
     <div
       className="min-h-screen d-flex align-items-center justify-content-center"
@@ -90,7 +95,7 @@ export default function Login() {
                   Welcome back to your agricultural journey
                 </p>
               </div>
-         
+
               <div className="card-body p-4">
                 {errors?.message && (
                   <div className="alert alert-danger text-center">
@@ -98,7 +103,6 @@ export default function Login() {
                   </div>
                 )}
                 <form onSubmit={handleSubmit}>
-                 
                   <div className="mb-3">
                     <label
                       htmlFor="email"
@@ -141,7 +145,6 @@ export default function Login() {
                     )}
                   </div>
 
-       
                   <div className="mb-4">
                     <label
                       htmlFor="password"
@@ -229,7 +232,6 @@ export default function Login() {
                     </div>
                   </div>
 
-            
                   <button
                     type="submit"
                     className="btn btn-lg w-100 text-white fw-bold shadow-sm"
@@ -270,7 +272,33 @@ export default function Login() {
                 <div className="text-center my-4">
                   <span className="text-muted">or</span>
                 </div>
-
+                <div className="mb-2">
+                  <button
+                    style={{
+                      background: "linear-gradient(45deg, #2d5016, #4a7c59)",
+                      borderRadius: "12px",
+                      border: "none",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.transform = "translateY(-2px)";
+                      e.target.style.boxShadow =
+                        "0 8px 20px rgba(45, 80, 22, 0.3)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.transform = "translateY(0)";
+                      e.target.style.boxShadow =
+                        "0 4px 10px rgba(45, 80, 22, 0.2)";
+                    }}
+                    onClick={handleGoogleLogin}
+                    className="btn btn-lg w-100 text-white fw-bold shadow-sm"
+                  >
+                    <span>
+                      <FaGoogle />
+                    </span>{" "}
+                    Continue with Google
+                  </button>
+                </div>
                 <div className="text-center">
                   <span className="text-muted">Don't have an account? </span>
                   <a

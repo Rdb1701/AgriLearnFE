@@ -4,15 +4,23 @@ import axiosClient from "../../../../utils/axios-client";
 import swal from "sweetalert";
 import { useStateContext } from "../../../contexts/ContextProvider";
 
+// Helper function to generate section code
+const generateSectionCode = () => {
+  return Math.random().toString(36).substring(2, 10).toUpperCase();
+};
+
 export default function ClassroomModal({ onSubmit, closeRef, edittingUser }) {
   const { user } = useStateContext();
-  const [data, setData] = useState({
+  
+  // Initialize with a generated section code
+  const [data, setData] = useState(() => ({
     id: "",
     class_name: "",
     subject: "",
     instructor_id: user.id,
-    section_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
-  });
+    section_code: generateSectionCode(),
+  }));
+  
   const [errors, setErrors] = useState(null);
 
   const handleChange = (e) => {
@@ -32,6 +40,7 @@ export default function ClassroomModal({ onSubmit, closeRef, edittingUser }) {
     if (responseErrors) {
       setErrors(responseErrors);
     } else {
+      // Reset form after successful submissionq
       setData({
         id: "",
         class_name: "",
@@ -41,7 +50,7 @@ export default function ClassroomModal({ onSubmit, closeRef, edittingUser }) {
     }
   };
 
-  //Is Edditong or has ID
+  //Is Editing or has ID
   useEffect(() => {
     if (edittingUser) {
       setData({
@@ -49,28 +58,28 @@ export default function ClassroomModal({ onSubmit, closeRef, edittingUser }) {
         class_name: edittingUser.class_name || "",
         subject: edittingUser.subject || "",
         instructor_id: user.id,
-        section_code: edittingUser.section_code || "",
+        section_code: edittingUser.section_code || generateSectionCode(),
       });
     } else {
-      setData({
+      // Only reset if we're not editing - to prevents unnecessary re-renders
+      setData(prevData => ({
         id: "",
         class_name: "",
         subject: "",
         instructor_id: user.id,
-        section_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
-      });
+        section_code: prevData.section_code || generateSectionCode(),
+      }));
     }
-  }, [edittingUser]);
+  }, [edittingUser, user.id]);
 
-
-  //hnadling close in clearing the inputs
+  //handling close in clearing the inputs
   const handleClose = () => {
     setData({
       id: "",
       class_name: "",
       subject: "",
       instructor_id: user.id,
-      section_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
+      section_code: generateSectionCode(),
     });
   };
 
