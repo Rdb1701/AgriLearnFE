@@ -11,19 +11,23 @@ export default function GoogleAuthSuccess() {
   const token = searchParams.get("tokenID");
   const name = searchParams.get("name");
   const email = searchParams.get("email");
+  const id = searchParams.get("id");
+  const avatar = searchParams.get("avatar");
 
   console.log(token);
 
   useEffect(() => {
     if (token) {
       axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      
+
       setToken(token);
       setUser({
+        id: id,
         name: name,
         email: email,
+        avatar: avatar,
       });
-      console.log("Token:", token);
+      // console.log("Token:", token);
       navigate("/dashboard");
     } else {
       navigate("/login");

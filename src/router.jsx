@@ -11,6 +11,7 @@ import ClassroomView from "./pages/Instructor/ClassroomView";
 import People from "./pages/Instructor/People";
 import Classwork from "./pages/Instructor/Classwork";
 import GoogleAuthSuccess from "./pages/Auth/GoogleAuthSuccess";
+import MatrialsForm from "./pages/Instructor/MaterialsForm";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "/instructor/classwork/:id",
         element: <Classwork />,
+      },
+        {
+        path: "/instructor/classwork/:id/materials",
+        element: <MatrialsForm />,
       },
     ],
   },

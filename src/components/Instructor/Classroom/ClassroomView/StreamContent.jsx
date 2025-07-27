@@ -13,10 +13,6 @@ export default function StreamContent() {
           Use the stream to share announcements, post assignments, and respond
           to student questions
         </p>
-        <button className="btn btn-outline-success">
-          <i className="fas fa-cog me-2"></i>
-          Stream settings
-        </button>
       </div>
     </div>
   );

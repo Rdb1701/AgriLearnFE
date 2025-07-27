@@ -27,7 +27,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       const response = await axiosClient.post("/login", formData);
-      console.log(response.data);
+     // console.log(response.data);
       setUser(response.data.user);
       setToken(response.data.token);
     } catch (error) {
@@ -50,7 +50,7 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/api/auth/google/redirect";
+    window.location.href = "http://localhost:8000/auth/google/redirect";
   };
 
   return (

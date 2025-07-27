@@ -26,10 +26,10 @@ export default function ViewHeader({ subject, classroomName }) {
                   style={{ fontSize: "4rem" }}
                 ></i>
               </div>
-              <button className="btn btn-light btn-sm ms-3">
+              {/* <button className="btn btn-light btn-sm ms-3">
                 <i className="fas fa-edit me-2"></i>
                 Customize
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
