@@ -5,6 +5,7 @@ import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import { SiGoogleclassroom } from "react-icons/si";
 import { FaHome, FaUsers } from "react-icons/fa";
+import { IoArchiveSharp } from "react-icons/io5";
 
 export default function DefaultLayout() {
   const [activeItem, setActiveItem] = useState("dashboard");
@@ -27,6 +28,12 @@ export default function DefaultLayout() {
       id: "classroom",
       label: "Classroom Management",
       icon: <SiGoogleclassroom />,
+      route: "/instructor/classrooms",
+    },
+     {
+      id: "archives",
+      label: "Archives",
+      icon: <IoArchiveSharp />,
       route: "/instructor/classrooms",
     },
     {
@@ -109,7 +116,7 @@ export default function DefaultLayout() {
             {menuItems.map((item) => (
               <div key={item.id} className="mb-2">
                 <button
-                  className={`btn w-100 d-flex align-items-center text-start p-1 rounded-3 ${
+                  className={`btn w-100 d-flex align-items-center text-start p-3 rounded-3 ${
                     activeItem === item.id
                       ? "btn-success"
                       : "btn-outline-success text-white"

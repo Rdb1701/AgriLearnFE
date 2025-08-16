@@ -11,6 +11,10 @@ export default function Dropdown() {
     
   };
 
+  const handleQuiz = ()=>{
+     navigate(`/instructor/classwork/${id}/quiz`)
+  }
+
   return (
     <>
       <style>{dropdownStyles}</style>
@@ -26,16 +30,16 @@ export default function Dropdown() {
 
         {isOpen && (
           <div className="dropdown-menu show position-absolute end-0 mt-1">
-            <button
+            {/* <button
               className="dropdown-item py-2 px-3"
               onClick={() => setIsOpen(false)}
             >
               <i className="fas fa-file-alt me-2 text-success"></i>
               Add Assignment
-            </button>
+            </button> */}
             <button
               className="dropdown-item py-2 px-3"
-              onClick={() => setIsOpen(false)}
+              onClick={handleQuiz}
             >
               <i className="fas fa-question-circle me-2 text-success"></i>
               Add Quiz

@@ -11,7 +11,10 @@ import ClassroomView from "./pages/Instructor/ClassroomView";
 import People from "./pages/Instructor/People";
 import Classwork from "./pages/Instructor/Classwork";
 import GoogleAuthSuccess from "./pages/Auth/GoogleAuthSuccess";
-import MatrialsForm from "./pages/Instructor/MaterialsForm";
+import MaterialsForm from "./pages/Instructor/MaterialsForm";
+import MaterialView from "./pages/Instructor/MaterialView";
+import MaterialsEditForm from "./pages/Instructor/MaterialsEditForm";
+import QuizForm from "./pages/Instructor/QuizForm";
 
 const router = createBrowserRouter([
   {
@@ -46,9 +49,21 @@ const router = createBrowserRouter([
         path: "/instructor/classwork/:id",
         element: <Classwork />,
       },
-        {
+      {
         path: "/instructor/classwork/:id/materials",
-        element: <MatrialsForm />,
+        element: <MaterialsForm />,
+      },
+      {
+        path: "/instructor/classwork/:id/materialsView/:material_id",
+        element: <MaterialView />,
+      },
+       {
+        path: "/instructor/classwork/:id/materialsEdit/:material_id",
+        element: <MaterialsEditForm />,
+      },
+         {
+        path: "/instructor/classwork/:id/quiz",
+        element: <QuizForm />,
       },
     ],
   },

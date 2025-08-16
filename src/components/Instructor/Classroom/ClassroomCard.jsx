@@ -103,9 +103,15 @@ export default function ClassroomCard({ classroomData, onEdit, isLoading }) {
           ) : (
             <div className="text-center ">
               {isLoading ? (
-                <span>
-                  Loading <FaSpinner />
-                </span>
+               <div className="text-center py-4">
+                    <div
+                      className="spinner-border text-success mb-3"
+                      role="status"
+                    >
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="text-muted mb-0">Loading Classroom...</p>
+                  </div>
               ) : (
                 <span className="text-danger">No Data Available</span>
               )}
