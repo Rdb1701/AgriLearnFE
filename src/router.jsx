@@ -15,6 +15,7 @@ import MaterialsForm from "./pages/Instructor/MaterialsForm";
 import MaterialView from "./pages/Instructor/MaterialView";
 import MaterialsEditForm from "./pages/Instructor/MaterialsEditForm";
 import QuizForm from "./pages/Instructor/QuizForm";
+import QuizView from "./pages/Instructor/QuizView";
 
 const router = createBrowserRouter([
   {
@@ -57,13 +58,17 @@ const router = createBrowserRouter([
         path: "/instructor/classwork/:id/materialsView/:material_id",
         element: <MaterialView />,
       },
-       {
+      {
         path: "/instructor/classwork/:id/materialsEdit/:material_id",
         element: <MaterialsEditForm />,
       },
-         {
+      {
         path: "/instructor/classwork/:id/quiz",
         element: <QuizForm />,
+      },
+        {
+        path: "/instructor/classwork/:id/quizView/:created_at",
+        element: <QuizView />,
       },
     ],
   },

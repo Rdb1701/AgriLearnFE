@@ -19,11 +19,11 @@ export default function ClassroomView() {
     setIsLoading(true);
     try {
       const response = await axiosClient(`/classroom/${id}/materials`);
-      console.log(response.data);
+      // console.log(response.data);
       setMaterials(response.data);
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
@@ -36,6 +36,7 @@ export default function ClassroomView() {
       console.log("Error Getting Data: ", error);
     }
   };
+
 
   useEffect(() => {
     fetchData();
@@ -58,7 +59,10 @@ export default function ClassroomView() {
 
         <div className="row">
           <LeftSidebar class_code={classCode.section_code} />
-          <MainContent materials={materials} isLoading = {isLoading} />
+          <MainContent
+            materials={materials}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </div>

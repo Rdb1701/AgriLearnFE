@@ -17,7 +17,7 @@ export default function Classroom() {
     try {
       const response = await axiosClient.get("/classroom");
       setClassroomData(response.data);
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.log("Error in fetching Classroom Data", error);
     }finally {

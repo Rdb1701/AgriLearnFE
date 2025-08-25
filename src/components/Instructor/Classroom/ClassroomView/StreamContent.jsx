@@ -1,23 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStateContext } from "../../../../contexts/ContextProvider";
 import { CgNotes } from "react-icons/cg";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
+import axiosClient from "../../../../../utils/axios-client";
+import { MdOutlineQuiz } from "react-icons/md";
+import { encrypt } from "../../../../../utils/encryption";
 
 export default function StreamContent({ materials, isLoading }) {
   const [activeTab, setActiveTab] = useState("materials");
   const { user } = useStateContext();
+  const [quizData, setQuizData] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const encryptedID = encodeURIComponent(encrypt(id));
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
     console.log("Fetching:", tabName);
-    // Add your fetch logic here
+    const fetchQuiz = async () => {
+      try {
+        const response = await axiosClient(`/quiz/${id}/quizzes`);
+        console.log(response.data);
+        setQuizData(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchQuiz();
   };
 
   const handleClickMaterialView = (material_id) => {
-    navigate(`/instructor/classwork/${id}/materialsView/${material_id}`);
+    navigate(`/instructor/classwork/${encryptedID}/materialsView/${material_id}`);
+  };
+
+  const handleClickQuizView = (created_at) => {
+    if (!id || !created_at) {
+      console.error("Missing id or created_at", { id, created_at });
+      return;
+    }
+
+    const encryptedDate = encodeURIComponent(encrypt(created_at));
+
+    navigate(`/instructor/classwork/${encryptedID}/quizView/${encryptedDate}`);
   };
 
   return (
@@ -83,7 +110,7 @@ export default function StreamContent({ materials, isLoading }) {
                     </div>
                     <div className="material-subtitle">
                       {" "}
-                      {new Date(mat.created_at).toLocaleDateString("en-US", {
+                      {new Date(mat.created_at).toLocaleDateString("en-PH", {
                         month: "long",
                         day: "numeric",
                       })}
@@ -102,25 +129,40 @@ export default function StreamContent({ materials, isLoading }) {
                 </div>
               </div>
             ))
-          ) : activeTab === "quiz" ? (
-            // Quiz empty state
-            <>
-              <div className="mb-4 position-relative d-inline-block quiz-container">
-                <div className="quiz-icon">
-                  <svg
-                    width="80"
-                    height="80"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z" />
-                  </svg>
+          ) : activeTab === "quiz" && quizData.length > 0 ? (
+            quizData.map((quiz) => (
+              <div
+                key={quiz.quiz_title}
+                className="material-card"
+                onClick={() => handleClickQuizView(quiz.created_at)}
+              >
+                <div className="d-flex align-items-center justify-content-between">
+                  <MdOutlineQuiz className="fs-2 me-2 text-success" />
+                  <div className="material-content">
+                    <div className="material-title">
+                      {user.name + " posted a new quiz: " + quiz.quiz_title}
+                    </div>
+                    <div className="material-subtitle">
+                      {" "}
+                      {new Date(quiz.created_at).toLocaleDateString("en-PH", {
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </div>
+                  </div>
+                  <div className="material-arrow">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4">
-                <h5 className="fw-semibold text-dark mb-3">No quizzes yet</h5>
-              </div>
-            </>
+            ))
           ) : (
             <>
               <div className="text-center ">
@@ -132,7 +174,7 @@ export default function StreamContent({ materials, isLoading }) {
                     >
                       <span className="visually-hidden">Loading...</span>
                     </div>
-                    <p className="text-muted mb-0">Loading materials...</p>
+                    <p className="text-muted mb-0">Loading...</p>
                   </div>
                 ) : (
                   // Materials empty state

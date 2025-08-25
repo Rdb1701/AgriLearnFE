@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import axiosClient from "../../../utils/axios-client";
 import { useStateContext } from "../../contexts/ContextProvider";
 import swal from "sweetalert";
+import { decrypt } from "../../../utils/encryption";
 
 export default function People() {
   const [activeTab, setActiveTab] = useState("people");
@@ -13,6 +14,7 @@ export default function People() {
   const { id } = useParams();
   const { user } = useStateContext();
   const [students, setStudents] = useState([]);
+  const decryptedID   = decrypt(decodeURIComponent(id));
 
   // Mock data matching the image
   const teachers = [

@@ -18,6 +18,7 @@ import axiosClient from "../../../utils/axios-client";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStateContext } from "../../contexts/ContextProvider";
 import swal from "sweetalert";
+import { decrypt } from "../../../utils/encryption";
 
 export default function MaterialsEditForm() {
   const { user } = useStateContext();
@@ -34,6 +35,7 @@ export default function MaterialsEditForm() {
   const { id, material_id } = useParams(); // classroom id and material id
   const uploadRef = useRef();
   const navigate = useNavigate();
+  const decryptedClassroomID   = decrypt(decodeURIComponent(id));
 
   const BASE_URL =
     (import.meta.env && import.meta.env.VITE_IMAGE_API_BASE_URL) ||
@@ -43,7 +45,7 @@ export default function MaterialsEditForm() {
     const fetchData = async () => {
       try {
         // Fetch classroom info
-        const classroomResponse = await axiosClient.get(`/classroom/${id}`);
+        const classroomResponse = await axiosClient.get(`/classroom/${decryptedClassroomID}`);
         setSection(classroomResponse.data.data.class_name);
 
         // Fetch material data
@@ -211,7 +213,7 @@ export default function MaterialsEditForm() {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("classroom_id", id);
+    formData.append("classroom_id", decryptedClassroomID);
     formData.append("uploaded_by", user.id);
     formData.append("_method", "PUT"); // method spoofing
 
@@ -233,7 +235,7 @@ export default function MaterialsEditForm() {
       });
 
       swal("Success", `${response.data.message}`, "success");
-      navigate(`/instructor/classrooms/${id}`);
+      navigate(`/instructor/classrooms/${decryptedClassroomID}`);
     } catch (error) {
       console.error("Update error:", error);
 
