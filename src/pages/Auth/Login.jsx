@@ -27,7 +27,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       const response = await axiosClient.post("/login", formData);
-     // console.log(response.data);
+      // console.log(response.data);
       setUser(response.data.user);
       setToken(response.data.token);
     } catch (error) {
@@ -77,17 +77,14 @@ export default function Login() {
                     className="d-inline-flex align-items-center justify-content-center rounded-circle bg-white shadow-sm"
                     style={{ width: "70px", height: "70px" }}
                   >
-                    <svg
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#2d5016"
-                      strokeWidth="2"
-                    >
-                      <path d="M12 2L2 7v10c0 5.55 3.84 10 9 12 5.16-2 9-6.45 9-12V7l-10-5z" />
-                      <path d="M8 11l2 2 4-4" />
-                    </svg>
+                    <img
+                      src="/logo.png" 
+                      alt="AgriLearn Logo"
+                      style={{
+                        width: "100px",  
+                        height: "100px",
+                      }}
+                    />
                   </div>
                 </div>
                 <h2 className="text-white mb-1 fw-bold">AgriLearn</h2>
@@ -299,7 +296,7 @@ export default function Login() {
                     Continue with Google
                   </button>
                 </div>
-                <div className="text-center">
+                {/* <div className="text-center">
                   <span className="text-muted">Don't have an account? </span>
                   <a
                     href="#"
@@ -308,7 +305,7 @@ export default function Login() {
                   >
                     Join AgriLearn today
                   </a>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

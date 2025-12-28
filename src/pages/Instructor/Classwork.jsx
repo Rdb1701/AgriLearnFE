@@ -10,14 +10,18 @@ export default function Classwork() {
   const { id } = useParams();
   const [materials, setMaterials] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [quizStatus, setQuizStatus] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosClient(`/classroom/${id}/materials`);
-        console.log(response.data);
-        setMaterials(response.data);
+        const [materialsRes, quizRes] = await Promise.all([
+          axiosClient(`/classroom/${id}/materials`),
+          axiosClient(`/classroom/getStatus/${id}`),
+        ]);
+        setMaterials(materialsRes.data);
+        setQuizStatus(quizRes.data.status);
       } catch (error) {
         console.log(error);
       } finally {
@@ -26,25 +30,24 @@ export default function Classwork() {
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   return (
-    <div>
-      <div className="min-vh-100 bg-light">
-        <NavigationTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          paramsId={id}
-        />
+    <div className="min-vh-100 bg-light">
+      <NavigationTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        paramsId={id}
+      />
 
-        <div className="container-fluid py-4">
-          <div className="row justify-content-center">
-            <div className="col-12 col-md-8 col-lg-6">
-              <div className="text-end mb-4">
-                <Dropdown />
-              </div>
-              <EmptyState materials={materials} isLoading={isLoading} />
+      <div className="container-fluid py-4">
+        <div className="row justify-content-center">
+          <div className="col-12 col-md-8 col-lg-6">
+            <div className="text-end mb-4">
+
+              {quizStatus && <Dropdown />}
             </div>
+            <EmptyState materials={materials} isLoading={isLoading} />
           </div>
         </div>
       </div>

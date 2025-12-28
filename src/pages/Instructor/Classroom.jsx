@@ -20,7 +20,7 @@ export default function Classroom() {
       //console.log(response.data);
     } catch (error) {
       console.log("Error in fetching Classroom Data", error);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -33,7 +33,7 @@ export default function Classroom() {
         closeRef.current.click();
         fetchData();
         console.log(response.data);
-      }else{
+      } else {
         const response = await axiosClient.put(`/classroom/${payload.id}`, payload);
         swal("Successfully Udpated!", "", "success");
         closeRef.current.click();
@@ -68,8 +68,8 @@ export default function Classroom() {
         closeRef={closeRef}
         edittingUser={isEditting}
       />
-      <ClassroomHeader onEditRef={onEditRef}  />
-      <ClassroomCard classroomData={classroomData} onEdit={handleEdit}  isLoading={isLoading}/>
+      <ClassroomHeader onEditRef={onEditRef} />
+      <ClassroomCard classroomData={classroomData} onEdit={handleEdit} isLoading={isLoading} fetchClassroom={fetchData} description="My Classes" />
     </>
   );
 }

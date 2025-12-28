@@ -19,15 +19,28 @@ const DIFFICULTY_LEVELS = [
 ];
 
 export default function QuizView() {
-  const { id, created_at } = useParams(); // quiz id
+  const { id, created_at } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [quizTitle, setQuizTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [questions, setQuestions] = useState([]);
   const {user} = useStateContext();
 
   const decryptedID = decrypt(decodeURIComponent(id));
   const decryptedDate = decrypt(decodeURIComponent(created_at));
+
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -37,6 +50,7 @@ export default function QuizView() {
         );
 
         setQuizTitle(data[0]?.quiz_title || ""); 
+        setDueDate(formatDateForInput(data[0]?.due_date));
 
         setQuestions(
           data.map((q) => ({
@@ -47,7 +61,7 @@ export default function QuizView() {
               try {
                 return JSON.parse(q.options); 
               } catch {
-                return ["Option 1", "Option 2"]; // fallback
+                return ["Option 1", "Option 2"]; 
               }
             })(),
             correctAnswer: q.correct_answer,
@@ -73,6 +87,7 @@ export default function QuizView() {
         quiz_title: quizTitle.trim(),
         classroom_id: decryptedID,
         created_by: user.id,
+        due_date: dueDate || null,
         questions: questions.map((q) => ({
           id: q.id,
           questions_text: q.questionText,
@@ -151,16 +166,28 @@ export default function QuizView() {
         </div>
       </div>
 
-      {/* Quiz Title */}
+      {/* Quiz Title and Due Date */}
       <div className="card mb-4 shadow-sm">
         <div className="card-body">
-          <label className="form-label fw-bold">Quiz Title</label>
-          <input
-            type="text"
-            className="form-control form-control-lg"
-            value={quizTitle}
-            onChange={(e) => setQuizTitle(e.target.value)}
-          />
+          <div className="mb-3">
+            <label className="form-label fw-bold">Quiz Title</label>
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              value={quizTitle}
+              onChange={(e) => setQuizTitle(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="form-label fw-bold">Due Date (Optional)</label>
+            <input
+              type="datetime-local"
+              className="form-control"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
+            <small className="text-muted">Leave empty if no due date is required</small>
+          </div>
         </div>
       </div>
 

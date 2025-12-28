@@ -13,8 +13,9 @@ export default function GoogleAuthSuccess() {
   const email = searchParams.get("email");
   const id = searchParams.get("id");
   const avatar = searchParams.get("avatar");
+   const role = searchParams.get("role");
 
-  console.log(token);
+ // console.log(token);
 
   useEffect(() => {
     if (token) {
@@ -26,6 +27,7 @@ export default function GoogleAuthSuccess() {
         name: name,
         email: email,
         avatar: avatar,
+        role : role
       });
       // console.log("Token:", token);
       navigate("/dashboard");

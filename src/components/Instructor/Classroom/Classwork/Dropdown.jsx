@@ -1,33 +1,38 @@
 import { useState, react } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useStateContext } from "../../../../contexts/ContextProvider";
 
 export default function Dropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { id } = useParams();
+  const { user } = useStateContext();
   const navigate = useNavigate();
 
+
   const handleMaterials = () => {
-    navigate(`/instructor/classwork/${id}/materials`)
-    
+    navigate(`/instructor/classwork/${id}/materials`);
   };
 
-  const handleQuiz = ()=>{
-     navigate(`/instructor/classwork/${id}/quiz`)
-  }
+  const handleQuiz = () => {
+    navigate(`/instructor/classwork/${id}/quiz`);
+  };
 
   return (
     <>
       <style>{dropdownStyles}</style>
       <div className="dropdown">
-        <button
-          className="btn btn-success rounded-pill px-4 py-2 fw-medium shadow-sm create-btn dropdown-toggle"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-expanded={isOpen}
-        >
-          <i className="fas fa-plus me-2"></i>
-          Create
-        </button>
-
+        {user.role === "Instructor" ? (
+          <button
+            className="btn btn-success rounded-pill px-4 py-2 fw-medium shadow-sm create-btn dropdown-toggle"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-expanded={isOpen}
+          >
+            <i className="fas fa-plus me-2"></i>
+            Create
+          </button>
+        ) : (
+          ""
+        )}
         {isOpen && (
           <div className="dropdown-menu show position-absolute end-0 mt-1">
             {/* <button
@@ -37,10 +42,7 @@ export default function Dropdown() {
               <i className="fas fa-file-alt me-2 text-success"></i>
               Add Assignment
             </button> */}
-            <button
-              className="dropdown-item py-2 px-3"
-              onClick={handleQuiz}
-            >
+            <button className="dropdown-item py-2 px-3" onClick={handleQuiz}>
               <i className="fas fa-question-circle me-2 text-success"></i>
               Add Quiz
             </button>

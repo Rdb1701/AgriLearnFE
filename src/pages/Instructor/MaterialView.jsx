@@ -3,11 +3,13 @@ import { FaArrowLeft } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../../../utils/axios-client";
+import { useStateContext } from "../../contexts/ContextProvider";
 
 export default function MaterialView({ classroomInfo }) {
   const { material_id, id } = useParams();
   const [instructional_materials, setInstructionalMaterials] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const { user } = useStateContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,13 +27,16 @@ export default function MaterialView({ classroomInfo }) {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.dropdown-menu') && !event.target.closest('.dropdown-toggle')) {
+      if (
+        !event.target.closest(".dropdown-menu") &&
+        !event.target.closest(".dropdown-toggle")
+      ) {
         setShowDropdown(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const BASE_URL =
@@ -130,25 +135,36 @@ export default function MaterialView({ classroomInfo }) {
 
   const handleEdit = () => {
     setShowDropdown(false);
-    
-    navigate(`/instructor/classwork/${id}/materialsEdit/${material_id}`)
-    
+
+    navigate(
+      `/instructor/classwork/${encodeURIComponent(
+        id
+      )}/materialsEdit/${material_id}`
+    );
   };
 
   const handleDelete = async () => {
     setShowDropdown(false);
-    
-    if (window.confirm("Are you sure you want to delete this material? This action cannot be undone.")) {
-      try {
-        await axiosClient.delete(`/materials/${material_id}`);
-       // console.log("Material deleted successfully");
-          swal("Success", `Material deleted successfully`, "success");
-        // Navigate back or show success message
-        window.history.back();
-      } catch (error) {
-        console.error("Delete error:", error);
-        alert("Failed to delete material. Please try again.");
-      }
+
+    const confirm = await swal({
+      title: "Are you sure?",
+      text: "This will permanently delete materials. This action cannot be undone.",
+      icon: "warning",
+      buttons: ["Cancel", "Yes, delete it!"],
+      dangerMode: true,
+    });
+
+    if (!confirm) return;
+
+    try {
+      await axiosClient.delete(`/materials/${material_id}`);
+      // console.log("Material deleted successfully");
+      swal("Success", `Material deleted successfully`, "success");
+      // Navigate back or show success message
+      window.history.back();
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Failed to delete material. Please try again.");
     }
   };
 
@@ -174,7 +190,10 @@ export default function MaterialView({ classroomInfo }) {
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
         <div className="d-flex align-items-center">
-          <button className="btn p-2 me-2" onClick={() => window.history.back()}>
+          <button
+            className="btn p-2 me-2"
+            onClick={() => window.history.back()}
+          >
             <FaArrowLeft style={{ fontSize: "20px" }} />
           </button>
 
@@ -184,40 +203,47 @@ export default function MaterialView({ classroomInfo }) {
             </h5>
             <small className="text-muted">
               {headerMaterial?.uploader_name || "Unknown"} •{" "}
-              {headerMaterial?.created_at ? formatDate(headerMaterial.created_at) : ""}
+              {headerMaterial?.created_at
+                ? formatDate(headerMaterial.created_at)
+                : ""}
             </small>
           </div>
         </div>
-        
+
         {/* Dropdown Menu */}
-        <div className="position-relative">
-          <button 
-            className="btn btn-light border-0 dropdown-toggle"
-            onClick={() => setShowDropdown(!showDropdown)}
-            aria-expanded={showDropdown}
-          >
-            <BsThreeDotsVertical />
-          </button>
-          
-          {showDropdown && (
-            <div className="dropdown-menu show position-absolute end-0 mt-1" style={{ zIndex: 1000 }}>
-              <button 
-                className="dropdown-item d-flex align-items-center"
-                onClick={handleEdit}
+        {user.role === "Instructor" && (
+          <div className="position-relative">
+            <button
+              className="btn btn-light border-0 dropdown-toggle"
+              onClick={() => setShowDropdown(!showDropdown)}
+              aria-expanded={showDropdown}
+            >
+              <BsThreeDotsVertical />
+            </button>
+
+            {showDropdown && (
+              <div
+                className="dropdown-menu show position-absolute end-0 mt-1"
+                style={{ zIndex: 1000 }}
               >
-                <i className="bi bi-pencil-square me-2"></i>
-                Edit Material
-              </button>
-              <button 
-                className="dropdown-item d-flex align-items-center text-danger"
-                onClick={handleDelete}
-              >
-                <i className="bi bi-trash3 me-2"></i>
-                Delete Material
-              </button>
-            </div>
-          )}
-        </div>
+                <button
+                  className="dropdown-item d-flex align-items-center"
+                  onClick={handleEdit}
+                >
+                  <i className="bi bi-pencil-square me-2"></i>
+                  Edit Material
+                </button>
+                <button
+                  className="dropdown-item d-flex align-items-center text-danger"
+                  onClick={handleDelete}
+                >
+                  <i className="bi bi-trash3 me-2"></i>
+                  Delete Material
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Description */}
@@ -235,8 +261,12 @@ export default function MaterialView({ classroomInfo }) {
             let fileTypes = [];
 
             try {
-              filePaths = material.file_path ? JSON.parse(material.file_path) : [];
-              fileTypes = material.file_type ? JSON.parse(material.file_type) : [];
+              filePaths = material.file_path
+                ? JSON.parse(material.file_path)
+                : [];
+              fileTypes = material.file_type
+                ? JSON.parse(material.file_type)
+                : [];
             } catch (error) {
               // fallback if already arrays or single strings
               filePaths = Array.isArray(material.file_path)
@@ -282,12 +312,16 @@ export default function MaterialView({ classroomInfo }) {
                         </div>
                         <div className="flex-grow-1">
                           <h6 className="card-title mb-1" title={fileName}>
-                            {fileName.length > 30 ? `${fileName.substring(0, 30)}...` : fileName}
+                            {fileName.length > 30
+                              ? `${fileName.substring(0, 30)}...`
+                              : fileName}
                           </h6>
                           <small className="text-muted">{readableType}</small>
                           {material.isOffline && (
                             <div className="mt-1">
-                              <span className="badge bg-secondary">Offline</span>
+                              <span className="badge bg-secondary">
+                                Offline
+                              </span>
                             </div>
                           )}
                         </div>

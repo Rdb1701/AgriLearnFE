@@ -11,26 +11,46 @@ import { decrypt } from "../../../utils/encryption";
 export default function People() {
   const [activeTab, setActiveTab] = useState("people");
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [teacher, setTeacher] = useState([]);
   const { id } = useParams();
   const { user } = useStateContext();
   const [students, setStudents] = useState([]);
-  const decryptedID   = decrypt(decodeURIComponent(id));
+  const [quizStatus, setQuizStatus] = useState(true);
 
-  // Mock data matching the image
   const teachers = [
     {
-      id: user.id,
-      name: user.name,
-      avatar: user.name.charAt(0).toUpperCase(),
+      id: user.role === "Instructor" ? user.id : teacher.id,
+      name: user.role === "Instructor" ? user.name : teacher.name,
+      avatar:
+        user.role === "Instructor"
+          ? user.name.charAt(0).toUpperCase()
+          : teacher.name?.charAt(0)?.toUpperCase() || "?",
       color: "#ff6b35", // Orange color
     },
   ];
 
+  if (user.role === "Student") {
+    useEffect(() => {
+      const fetchTeacher = async () => {
+        try {
+          const response = await axiosClient.get(`/getInstructor/${id}`);
+          setTeacher(response.data);
+          console.log(response.data.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchTeacher();
+    }, []);
+  }
+
   const fetchStudents = async () => {
     try {
-      const response = await axiosClient.get("/class_enrollment");
+      const response = await axiosClient.get(
+        `/class_enrollment??classroom_id=${id}`
+      );
       setStudents(response.data);
-    //  console.log(response.data);
+      //  console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -85,8 +105,21 @@ export default function People() {
     }
   };
 
+
+ const fetchClassroomStatus = async () => {
+    try {
+      const response = await axiosClient.get(`/classroom/getStatus/${id}`)
+
+      console.log(response.data)
+      setQuizStatus(response.data.status);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     fetchStudents();
+    fetchClassroomStatus();
   }, []);
 
   return (
@@ -137,13 +170,17 @@ export default function People() {
                   <span className="text-muted me-3 small">
                     {students.length} Students
                   </span>
-                  <button
-                    className="btn btn-sm btn-outline-secondary rounded-circle p-2"
-                    data-bs-target="#add_modal"
-                    data-bs-toggle="modal"
-                  >
-                    <UserPlus size={16} />
-                  </button>
+                  {user.role === "Instructor" ? (
+                    <button
+                      className="btn btn-sm btn-outline-secondary rounded-circle p-2"
+                      data-bs-target="#add_modal"
+                      data-bs-toggle="modal"
+                    >
+                      <UserPlus size={16} />
+                    </button>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>
@@ -226,36 +263,38 @@ export default function People() {
                       >
                         {student.name === null ? student.email : student.name}
                       </span>
-                      {student.status === false && (
+                      {student.status === 0 && (
                         <span className="badge bg-secondary ms-2 small">
                           (invited)
                         </span>
                       )}
                     </div>
                   </div>
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-outline-secondary"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <MoreHorizontal size={16} />
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a
-                          className="dropdown-item"
-                          href="#"
-                          onClick={() => {
-                            handleDelete(student.id);
-                          }}
-                        >
-                          Remove student
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+                  {user.role === "Instructor" && (
+                    <div className="dropdown">
+                      <button
+                        className="btn btn-sm btn-outline-secondary"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <MoreHorizontal size={16} />
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <a
+                            className="dropdown-item"
+                            href="#"
+                            onClick={() => {
+                              handleDelete(student.id);
+                            }}
+                          >
+                            Remove student
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

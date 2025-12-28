@@ -1,0 +1,70 @@
+import { useEffect, useState } from "react";
+import React from "react";
+import LeftSidebar from "../../components/Instructor/Classroom/ClassroomView/LeftSidebar";
+import ViewHeader from "../../components/Instructor/Classroom/ClassroomView/ViewHeader";
+import NavigationTabs from "../../components/Instructor/Classroom/ClassroomView/NavigationTabs";
+import MainContent from "../../components/Instructor/Classroom/ClassroomView/MainContent";
+import { useParams } from "react-router-dom";
+import axiosClient from "../../../utils/axios-client";
+import EmptyState from "../../components/Instructor/Classroom/Classwork/EmptyState";
+
+export default function StudentClassroomView() {
+  const { id } = useParams();
+  const [activeTab, setActiveTab] = useState("stream");
+  const [classCode, setClassCode] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient(`/classroom/${id}/materials`);
+      // console.log(response.data);
+      setMaterials(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getData = async () => {
+    try {
+      const response = await axiosClient.get(`/classroom/${id}`);
+      setClassCode(response.data.data);
+    } catch (error) {
+      console.log("Error Getting Data: ", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchData();
+    getData();
+  }, []);
+
+  return (
+    <div className="min-vh-100 bg-light">
+      <NavigationTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        paramsId={id}
+      />
+
+      <div className="container-fluid p-4">
+        <ViewHeader
+          classroomName={classCode.class_name}
+          subject={classCode.subject}
+        />
+
+        <div className="row">
+          <LeftSidebar class_code={classCode.section_code} paramsId={id} />
+          <MainContent
+            materials={materials}
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -5,6 +5,7 @@ import { useStateContext } from "../../contexts/ContextProvider";
 
 export default function QuizForm() {
   const [quizTitle, setQuizTitle] = useState('Untitled Quiz');
+  const [dueDate, setDueDate] = useState('');
   const [questions, setQuestions] = useState([]);
   const [previewMode, setPreviewMode] = useState(false);
   const { id, material_id } = useParams();
@@ -107,29 +108,30 @@ export default function QuizForm() {
 
   //SAVING QUIZ
   const saveQuiz = async () => {
-  try {
-    const quizData = {
-      quiz_title: quizTitle,
-      classroom_id: id,  
-      created_by: user.id,     
-      questions: questions.map(q => ({
-        questions_text: q.questionsText,
-        options: q.options,
-        correct_answer: q.correctAnswer,
-        difficulty_level: q.difficultyLevel
-      }))
-    };
+    try {
+      const quizData = {
+        quiz_title: quizTitle,
+        classroom_id: id,  
+        created_by: user.id,
+        due_date: dueDate || null,
+        questions: questions.map(q => ({
+          questions_text: q.questionsText,
+          options: q.options,
+          correct_answer: q.correctAnswer,
+          difficulty_level: q.difficultyLevel
+        }))
+      };
 
-    const response = await axiosClient.post("/quizzes", quizData);
+      const response = await axiosClient.post("/quizzes", quizData);
 
-    swal("", `${response.data.message}`, "success");
-    navigate(`/instructor/classrooms/${id}`)
-    
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-    alert("Failed to save quiz");
-  }
-};
+      swal("", `${response.data.message}`, "success");
+      navigate(`/instructor/classrooms/${id}`)
+      
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert("Failed to save quiz");
+    }
+  };
 
   const renderQuestionEditor = (question, index) => {
     return (
@@ -327,17 +329,39 @@ export default function QuizForm() {
           <div className="card mb-4 shadow-sm border-top border-4 border-success">
             <div className="card-body">
               {previewMode ? (
-                <h1 className="display-6 fw-bold text-success">{quizTitle}</h1>
+                <>
+                  <h1 className="display-6 fw-bold text-success">{quizTitle}</h1>
+                  {dueDate && (
+                    <p className="text-muted mt-2">
+                      <i className="bi bi-calendar-event me-2"></i>
+                      Due: {new Date(dueDate).toLocaleString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}
+                    </p>
+                  )}
+                </>
               ) : (
                 <>
                   <label className="form-label fw-bold">Quiz Title</label>
                   <input
                     type="text"
-                    className="form-control form-control-lg"
+                    className="form-control form-control-lg mb-3"
                     value={quizTitle}
                     onChange={(e) => setQuizTitle(e.target.value)}
                     placeholder="Enter quiz title"
                   />
+                  <label className="form-label fw-bold">Due Date (Optional)</label>
+                  <input
+                    type="datetime-local"
+                    className="form-control"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  />
+                  <small className="text-muted">Leave empty if no due date is required</small>
                 </>
               )}
             </div>

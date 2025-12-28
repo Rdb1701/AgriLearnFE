@@ -1,11 +1,13 @@
-"use client";
-
 import { useState } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider";
 import { SiGoogleclassroom } from "react-icons/si";
-import { FaHome, FaUsers } from "react-icons/fa";
+import { FaArrowLeft, FaHome, FaUsers } from "react-icons/fa";
+import { IoGameController } from "react-icons/io5";
 import { IoArchiveSharp } from "react-icons/io5";
+import { MdQuiz } from "react-icons/md";
+import axiosClient from "../../utils/axios-client";
+import swal from "sweetalert";
 
 export default function DefaultLayout() {
   const [activeItem, setActiveItem] = useState("dashboard");
@@ -30,24 +32,66 @@ export default function DefaultLayout() {
       icon: <SiGoogleclassroom />,
       route: "/instructor/classrooms",
     },
-     {
+    {
       id: "archives",
       label: "Archives",
       icon: <IoArchiveSharp />,
-      route: "/instructor/classrooms",
+      route: "/instructor/archive",
     },
+    // {
+    //   id: "user",
+    //   label: "User Management",
+    //   icon: <FaUsers />,
+    //   route: "/instructor/students",
+    // },
+  ];
+
+  const menuItemsStudent = [
     {
-      id: "user",
-      label: "User Management",
-      icon: <FaUsers />,
-      route: "/instructor/students",
+      id: "studentDashboard",
+      label: "Class",
+      icon: <SiGoogleclassroom />,
+      route: "/student/class",
     },
+    // {
+    //   id: "Simulation",
+    //   label: "2D Graphical Simulation",
+    //   icon: <IoGameController />,
+    //   route: "/student/class",
+    // },
+    // {
+    //   id: "Interactive_quiz",
+    //   label: "Interactive Quiz",
+    //   icon: <MdQuiz />,
+    //   route: "/student/class",
+    // },
   ];
 
   const handleItemClick = (itemId, route) => {
     setActiveItem(itemId);
     navigate(route);
     setIsMobileMenuOpen(false);
+  };
+
+  const onLogout = async () => {
+    const confirm = await swal({
+      title: "Are you sure you want to logout?",
+      text: "",
+      icon: "warning",
+      buttons: ["Cancel", "Logout"],
+      dangerMode: true,
+    });
+
+    if (!confirm) return;
+
+    try {
+      await axiosClient.post("/logout");
+
+      setUser({});
+      setToken(null);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -77,9 +121,8 @@ export default function DefaultLayout() {
 
       {/* Sidebar */}
       <div
-        className={`position-fixed h-100 d-flex flex-column ${
-          isMobileMenuOpen ? "d-block" : "d-none d-md-block"
-        }`}
+        className={`position-fixed h-100 d-flex flex-column ${isMobileMenuOpen ? "d-block" : "d-none d-md-block"
+          }`}
         style={{
           width: "280px",
           backgroundColor: "#2d5a2d",
@@ -94,17 +137,15 @@ export default function DefaultLayout() {
         {/* Header */}
         <div className="p-4 border-bottom border-success">
           <div className="d-flex align-items-center">
-            <div
-              className="rounded-circle me-3 d-flex align-items-center justify-content-center"
-              style={{
-                width: "40px",
-                height: "40px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                fontSize: "1.2rem",
-              }}
-            >
-              🌱
+            <div className="me-3">
+              <img
+                src="/logo.png"
+                alt="AgriLearn Logo"
+                style={{
+                  width: "40px",  
+                  height: "40px",
+                }}
+              />
             </div>
             <h5 className="mb-0 text-white fw-bold">AgriLearn</h5>
           </div>
@@ -113,43 +154,46 @@ export default function DefaultLayout() {
         {/* Navigation Menu */}
         <nav className="flex-grow-1 overflow-auto py-3">
           <div className="px-3">
-            {menuItems.map((item) => (
-              <div key={item.id} className="mb-2">
-                <button
-                  className={`btn w-100 d-flex align-items-center text-start p-3 rounded-3 ${
-                    activeItem === item.id
-                      ? "btn-success"
-                      : "btn-outline-success text-white"
-                  }`}
-                  style={{
-                    backgroundColor:
-                      activeItem === item.id ? "#4CAF50" : "transparent",
-                    borderColor: activeItem === item.id ? "#4CAF50" : "#4CAF50",
-                    transition: "all 0.3s ease",
-                  }}
-                  onClick={() => handleItemClick(item.id, item.route)}
-                  onMouseEnter={(e) => {
-                    if (activeItem !== item.id) {
-                      e.target.style.backgroundColor = "rgba(76, 175, 80, 0.1)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeItem !== item.id) {
-                      e.target.style.backgroundColor = "transparent";
-                    }
-                  }}
-                >
-                  <span className="me-3" style={{ fontSize: "1.1rem" }}>
-                    {item.icon}
-                  </span>
-                  <span className="fw-medium">{item.label}</span>
-                </button>
-              </div>
-            ))}
+            {(user.role === "Instructor" ? menuItems : menuItemsStudent).map(
+              (item) => (
+                <div key={item.id} className="mb-2">
+                  <button
+                    className={`btn w-100 d-flex align-items-center text-start p-3 rounded-3 ${activeItem === item.id
+                        ? "btn-success"
+                        : "btn-outline-success text-white"
+                      }`}
+                    style={{
+                      backgroundColor:
+                        activeItem === item.id ? "#4CAF50" : "transparent",
+                      borderColor:
+                        activeItem === item.id ? "#4CAF50" : "#4CAF50",
+                      transition: "all 0.3s ease",
+                    }}
+                    onClick={() => handleItemClick(item.id, item.route)}
+                    onMouseEnter={(e) => {
+                      if (activeItem !== item.id) {
+                        e.target.style.backgroundColor =
+                          "rgba(76, 175, 80, 0.1)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (activeItem !== item.id) {
+                        e.target.style.backgroundColor = "transparent";
+                      }
+                    }}
+                  >
+                    <span className="me-3" style={{ fontSize: "1.1rem" }}>
+                      {item.icon}
+                    </span>
+                    <span className="fw-medium">{item.label}</span>
+                  </button>
+                </div>
+              )
+            )}
           </div>
         </nav>
 
-        {/* Footer */}
+
         <div className="p-3 border-top border-success">
           <div className="d-flex align-items-center text-white">
             <div
@@ -170,6 +214,15 @@ export default function DefaultLayout() {
               <div className="text-success" style={{ fontSize: "0.8rem" }}>
                 {user.email}
               </div>
+              <div className="text-success" style={{ fontSize: "0.8rem" }}>
+                <a
+                  href="#"
+                  onClick={onLogout}
+                  style={{ textDecoration: "none", color: "green" }}
+                >
+                  logout
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -177,14 +230,14 @@ export default function DefaultLayout() {
 
       {/* Main Content */}
       <div className="flex-grow-1" style={{ marginLeft: "0" }}>
-        {/* Desktop margin */}
         <div className="d-none d-md-block" style={{ marginLeft: "280px" }}>
           <div className="p-3 p-md-4">
             <Outlet />
           </div>
         </div>
-        
-        {/* Mobile content (no margin) */}
+
+
+        {/* Mobile content */}
         <div className="d-md-none">
           <div style={{ height: "60px" }} />
           <div className="p-3">

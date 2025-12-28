@@ -3,7 +3,7 @@ import DefaultLayout from "./Layouts/DefaultLayout";
 import GuestLayout from "./Layouts/GuestLayout";
 import NotFound from "./pages/Auth/NotFound";
 import Login from "./pages/Auth/Login";
-import Users from "./pages/User/Users";
+
 import Dashboard from "./pages/Instructor/Dashboard";
 import Students from "./pages/Instructor/Students";
 import Classroom from "./pages/Instructor/Classroom";
@@ -16,16 +16,19 @@ import MaterialView from "./pages/Instructor/MaterialView";
 import MaterialsEditForm from "./pages/Instructor/MaterialsEditForm";
 import QuizForm from "./pages/Instructor/QuizForm";
 import QuizView from "./pages/Instructor/QuizView";
+import StudentClassroom from "./pages/Student/StudentClassroom";
+import StudentClassroomView from "./pages/Student/StudentClassroomView";
+import StudentQuizView from "./pages/Student/StudentQuizView";
+import Grades from "./pages/Instructor/Grades";
+import ArchiveClassroom from "./pages/Instructor/ArchiveClassroom";
+import Signup from "./pages/Auth/Signup";
+import GameSimulation from "./pages/Student/GameSimulation";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <DefaultLayout />,
     children: [
-      {
-        path: "/users",
-        element: <Users />,
-      },
       {
         path: "/instructor/dashboard",
         element: <Dashboard />,
@@ -37,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "/instructor/classrooms",
         element: <Classroom />,
+      },
+       {
+        path: "/instructor/archive",
+        element: <ArchiveClassroom />,
       },
       {
         path: "/instructor/classrooms/:id",
@@ -66,11 +73,46 @@ const router = createBrowserRouter([
         path: "/instructor/classwork/:id/quiz",
         element: <QuizForm />,
       },
-        {
+      {
         path: "/instructor/classwork/:id/quizView/:created_at",
         element: <QuizView />,
       },
+      
+      {
+        path: "/instructor/grades/:id",
+        element: <Grades />,
+      },
+      //STUDENT ROUTES
+
+      {
+        path: "/student/class",
+        element: <StudentClassroom />,
+      },
+      {
+        path: "/student/classrooms/:id",
+        element: <StudentClassroomView />,
+      },
+      {
+        path: "/student/classwork/:id",
+        element: <Classwork />,
+      },
+      {
+        path: "/student/people/:id",
+        element: <People />,
+      },
+      {
+        path: "/student/classwork/:id/materialsView/:material_id",
+        element: <MaterialView />,
+      },
+      {
+        path: "/student/quiz/:id/quizView/:created_at/:quiz_code",
+        element: <StudentQuizView />,
+      },
     ],
+  },
+  {
+    path: "/student/classroom/:id/simulation",
+    element: <GameSimulation />,
   },
   {
     path: "/",
@@ -89,6 +131,10 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
       },
+      {
+        path: "/signup",
+        element: <Signup />,
+      }
     ],
   },
   {

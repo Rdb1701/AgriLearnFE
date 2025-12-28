@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useStateContext } from "../../../../contexts/ContextProvider";
 import { CgNotes } from "react-icons/cg";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,7 +22,7 @@ export default function StreamContent({ materials, isLoading }) {
     const fetchQuiz = async () => {
       try {
         const response = await axiosClient(`/quiz/${id}/quizzes`);
-        console.log(response.data);
+        // console.log(response.data);
         setQuizData(response.data);
       } catch (error) {
         console.log(error);
@@ -32,11 +32,18 @@ export default function StreamContent({ materials, isLoading }) {
     fetchQuiz();
   };
 
+  //Instructor material link
   const handleClickMaterialView = (material_id) => {
     navigate(`/instructor/classwork/${encryptedID}/materialsView/${material_id}`);
   };
 
-  const handleClickQuizView = (created_at) => {
+  //student material link
+  const handleClickMaterialViewStudent = (material_id) => {
+    navigate(`/student/classwork/${encryptedID}/materialsView/${material_id}`);
+  }
+
+  //handle quiz
+  const handleClickQuizView = (created_at, quiz_code) => {
     if (!id || !created_at) {
       console.error("Missing id or created_at", { id, created_at });
       return;
@@ -44,8 +51,20 @@ export default function StreamContent({ materials, isLoading }) {
 
     const encryptedDate = encodeURIComponent(encrypt(created_at));
 
-    navigate(`/instructor/classwork/${encryptedID}/quizView/${encryptedDate}`);
+    //if instructor role
+    if (user.role === "Instructor") {
+      navigate(`/instructor/classwork/${encryptedID}/quizView/${encryptedDate}`);
+
+    }
+
+    const encryptedCode = encodeURIComponent(encrypt(quiz_code));
+    //if student role
+    if (user.role === "Student") {
+      navigate(`/student/quiz/${encryptedID}/quizView/${encryptedDate}/${encryptedCode}`);
+    }
   };
+
+
 
   return (
     <div className="card border-0 shadow-sm">
@@ -59,9 +78,8 @@ export default function StreamContent({ materials, isLoading }) {
           <div className="tab-navigation mb-4">
             <div className="d-flex justify-content-center gap-2">
               <button
-                className={`tab-button ${
-                  activeTab === "materials" ? "active" : ""
-                }`}
+                className={`tab-button ${activeTab === "materials" ? "active" : ""
+                  }`}
                 onClick={() => handleTabClick("materials")}
               >
                 <svg
@@ -100,13 +118,13 @@ export default function StreamContent({ materials, isLoading }) {
               <div
                 key={mat.id}
                 className="material-card"
-                onClick={() => handleClickMaterialView(mat.id)}
+                onClick={user.role === "Instructor" ? () => handleClickMaterialView(mat.id) : () => handleClickMaterialViewStudent(mat.id)}
               >
                 <div className="d-flex align-items-center justify-content-between">
                   <CgNotes className="fs-2 me-2 text-success" />
                   <div className="material-content">
                     <div className="material-title">
-                      {user.name + " posted a new material: " + mat.title}
+                      {mat.name + " posted a new material: " + mat.title}
                     </div>
                     <div className="material-subtitle">
                       {" "}
@@ -134,7 +152,7 @@ export default function StreamContent({ materials, isLoading }) {
               <div
                 key={quiz.quiz_title}
                 className="material-card"
-                onClick={() => handleClickQuizView(quiz.created_at)}
+                onClick={() => handleClickQuizView(quiz.created_at, quiz.quiz_code)}
               >
                 <div className="d-flex align-items-center justify-content-between">
                   <MdOutlineQuiz className="fs-2 me-2 text-success" />
@@ -142,13 +160,24 @@ export default function StreamContent({ materials, isLoading }) {
                     <div className="material-title">
                       {user.name + " posted a new quiz: " + quiz.quiz_title}
                     </div>
+
                     <div className="material-subtitle">
                       {" "}
                       {new Date(quiz.created_at).toLocaleDateString("en-PH", {
                         month: "long",
                         day: "numeric",
                       })}
+                      <span style={{ float: "right" }}>
+                        {"Due Date: "}
+                        {new Date(quiz.due_date).toLocaleDateString("en-PH", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
                     </div>
+
+
                   </div>
                   <div className="material-arrow">
                     <svg

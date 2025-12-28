@@ -1,14 +1,39 @@
 import React from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useStateContext } from "../../../../contexts/ContextProvider";
 
-export default function NavigationTabs({paramsId}) {
+export default function NavigationTabs({ paramsId }) {
   const location = useLocation();
+  const { user } = useStateContext();
 
   const tabs = [
-    { id: "stream", label: "Stream", path: `/instructor/classrooms/${paramsId}` },
-    { id: "classwork", label: "Classwork", path: `/instructor/classwork/${paramsId}` },
-    { id: "people", label: "People", path: `/instructor/people/${paramsId}` },
-    { id: "grades", label: "Grades", path: "/grades" },
+    {
+      id: "stream",
+      label: "Stream",
+      path:
+        user.role === "Instructor"
+          ? `/instructor/classrooms/${paramsId}`
+          : `/student/classrooms/${paramsId}`,
+    },
+    {
+      id: "classwork",
+      label: "Classwork",
+      path:
+        user.role === "Instructor"
+          ? `/instructor/classwork/${paramsId}`
+          : `/student/classwork/${paramsId}`,
+    },
+    {
+      id: "people",
+      label: "People",
+      path:
+        user.role === "Instructor"
+          ? `/instructor/people/${paramsId}`
+          : `/student/people/${paramsId}`,
+    },
+    user.role === "Instructor"
+      ? { id: "grades", label: "Grades", path: `/instructor/grades/${paramsId}` }
+      : {},
   ];
 
   return (
@@ -22,9 +47,10 @@ export default function NavigationTabs({paramsId}) {
               <li className="nav-item" key={tab.id}>
                 <Link
                   to={tab.path}
-                  className={`nav-link ${
-                    isActive ? "active border-success text-success" : "text-muted"
-                  }`}
+                  className={`nav-link ${isActive
+                    ? "active border-success text-success"
+                    : "text-muted"
+                    }`}
                 >
                   {tab.label}
                 </Link>

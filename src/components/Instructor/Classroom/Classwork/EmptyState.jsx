@@ -8,7 +8,7 @@ export default function EmptyState({ materials, isLoading }) {
   const [activeTab, setActiveTab] = useState("materials");
   const navigate = useNavigate();
   const { id } = useParams();
-  const {user} = useStateContext();
+  const { user } = useStateContext();
   const [quizData, setQuizData] = useState([]);
 
   const encryptedID = encodeURIComponent(encrypt(id));
@@ -20,7 +20,7 @@ export default function EmptyState({ materials, isLoading }) {
     const fetchQuiz = async () => {
       try {
         const response = await axiosClient(`/quiz/${id}/quizzes`);
-        console.log(response.data);
+        //  console.log(response.data);
         setQuizData(response.data);
       } catch (error) {
         console.log(error);
@@ -30,21 +30,38 @@ export default function EmptyState({ materials, isLoading }) {
     fetchQuiz();
   };
 
+  //instructor material link
   const handleClickMaterialView = (material_id) => {
 
     navigate(`/instructor/classwork/${encryptedID}/materialsView/${material_id}`);
   };
 
-   const handleClickQuizView = (created_at) => {
-       if (!id || !created_at) {
-         console.error("Missing id or created_at", { id, created_at });
-         return;
-       }
-   
-       const encryptedDate = encodeURIComponent(encrypt(created_at));
-   
-       navigate(`/instructor/classwork/${encryptedID}/quizView/${encryptedDate}`);
-     };
+
+  //student material link
+  const handleClickMaterialViewStudent = (material_id) => {
+    navigate(`/student/classwork/${encryptedID}/materialsView/${material_id}`);
+  }
+
+  const handleClickQuizView = (created_at, quiz_code) => {
+    if (!id || !created_at) {
+      console.error("Missing id or created_at", { id, created_at });
+      return;
+    }
+
+    const encryptedDate = encodeURIComponent(encrypt(created_at));
+
+    //if instructor role
+    if (user.role === "Instructor") {
+      navigate(`/instructor/classwork/${encryptedID}/quizView/${encryptedDate}`);
+
+    }
+    const encryptedCode = encodeURIComponent(encrypt(quiz_code));
+    //if student role
+    if (user.role === "Student") {
+      navigate(`/student/quiz/${encryptedID}/quizView/${encryptedDate}/${encryptedCode}`);
+    }
+
+  };
 
   return (
     <div className="text-center py-2">
@@ -53,9 +70,8 @@ export default function EmptyState({ materials, isLoading }) {
       <div className="tab-navigation mb-4">
         <div className="d-flex justify-content-center gap-2">
           <button
-            className={`tab-button ${
-              activeTab === "materials" ? "active" : ""
-            }`}
+            className={`tab-button ${activeTab === "materials" ? "active" : ""
+              }`}
             onClick={() => handleTabClick("materials")}
           >
             <svg
@@ -93,7 +109,7 @@ export default function EmptyState({ materials, isLoading }) {
             <div
               key={mat.id}
               className="material-card"
-              onClick={() => handleClickMaterialView(mat.id)}
+              onClick={user.role === "Instructor" ? () => handleClickMaterialView(mat.id) : () => handleClickMaterialViewStudent(mat.id)}
             >
               <div className="d-flex align-items-center justify-content-between">
                 <div className="material-content">
@@ -125,7 +141,7 @@ export default function EmptyState({ materials, isLoading }) {
             <div
               key={quiz.quiz_title}
               className="material-card"
-              onClick={() => handleClickQuizView(quiz.created_at)}
+              onClick={() => handleClickQuizView(quiz.created_at, quiz.quiz_code)}
             >
               <div className="d-flex align-items-center justify-content-between">
                 <div className="material-content">
@@ -134,11 +150,19 @@ export default function EmptyState({ materials, isLoading }) {
                   </div>
                   <div className="material-subtitle">
                     Posted on{" "}
-                    {new Date(quiz.created_at).toLocaleDateString("en-US", {
+                    {new Date(quiz.created_at).toLocaleDateString("en-PH", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                     })}
+                    <span style={{ float: "right" }}>
+                      {"Due Date: "}
+                      {new Date(quiz.due_date).toLocaleDateString("en-PH", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
                   </div>
                 </div>
                 <div className="material-arrow">
