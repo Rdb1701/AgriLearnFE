@@ -135,7 +135,7 @@ export default function TaskModal({ onSubmit, editingTask, tasks, onClose }) {
                   <option value="">Select a task...</option>
                   {tasks.map((task) => (
                     <option key={task.id} value={task.id}>
-                      {task.name} - {task.description}
+                      {task.name}
                     </option>
                   ))}
                 </select>
