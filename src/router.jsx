@@ -10,6 +10,7 @@ import Classroom from "./pages/Instructor/Classroom";
 import ClassroomView from "./pages/Instructor/ClassroomView";
 import People from "./pages/Instructor/People";
 import Classwork from "./pages/Instructor/Classwork";
+import Tasks from "./pages/Instructor/Tasks";
 import GoogleAuthSuccess from "./pages/Auth/GoogleAuthSuccess";
 import MaterialsForm from "./pages/Instructor/MaterialsForm";
 import MaterialView from "./pages/Instructor/MaterialView";
@@ -19,6 +20,7 @@ import QuizView from "./pages/Instructor/QuizView";
 import StudentClassroom from "./pages/Student/StudentClassroom";
 import StudentClassroomView from "./pages/Student/StudentClassroomView";
 import StudentQuizView from "./pages/Student/StudentQuizView";
+import StudentTasks from "./pages/Student/StudentTasks";
 import Grades from "./pages/Instructor/Grades";
 import ArchiveClassroom from "./pages/Instructor/ArchiveClassroom";
 import Signup from "./pages/Auth/Signup";
@@ -77,6 +79,10 @@ const router = createBrowserRouter([
         path: "/instructor/classwork/:id/quizView/:created_at",
         element: <QuizView />,
       },
+      {
+        path: "/instructor/tasks/:id",
+        element: <Tasks />,
+      },
       
       {
         path: "/instructor/grades/:id",
@@ -99,6 +105,10 @@ const router = createBrowserRouter([
       {
         path: "/student/people/:id",
         element: <People />,
+      },
+      {
+        path: "/student/tasks/:id",
+        element: <StudentTasks />,
       },
       {
         path: "/student/classwork/:id/materialsView/:material_id",

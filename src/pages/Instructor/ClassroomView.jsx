@@ -58,7 +58,7 @@ export default function ClassroomView() {
         />
 
         <div className="row">
-          <LeftSidebar class_code={classCode.section_code} />
+          <LeftSidebar class_code={classCode.section_code} paramsId={id} />
           <MainContent
             materials={materials}
             isLoading={isLoading}

@@ -24,6 +24,14 @@ export default function NavigationTabs({ paramsId }) {
           : `/student/classwork/${paramsId}`,
     },
     {
+      id: "tasks",
+      label: "Tasks",
+      path:
+        user.role === "Instructor"
+          ? `/instructor/tasks/${paramsId}`
+          : `/student/tasks/${paramsId}`,
+    },
+    {
       id: "people",
       label: "People",
       path:
